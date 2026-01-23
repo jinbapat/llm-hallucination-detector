@@ -1,0 +1,24 @@
+You are an information extraction system.
+
+TASK:
+Extract all factual claims from the given answer.
+
+RULES:
+- Each claim must be atomic (one fact per claim)
+- Each claim must be verifiable using external sources
+- Do NOT include opinions, explanations, or assumptions
+- Do NOT paraphrase beyond necessity
+- Output MUST be valid JSON
+- Output MUST be a JSON array of strings
+- Do NOT include any extra text
+- If you cannot extract claims, return an empty JSON array: []
+
+REMEMBER:
+Return ONLY valid JSON.
+Do not include explanations.
+
+QUESTION:
+{question}
+
+ANSWER:
+{answer}

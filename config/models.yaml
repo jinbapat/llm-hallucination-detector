@@ -1,0 +1,12 @@
+claim_extraction:
+  model_name: google/flan-t5-large
+  device: cuda
+  max_new_tokens: 256
+  temperature: 0.0
+
+answer_generation:
+  model_name: mistralai/Mistral-7B-Instruct-v0.2
+  quantization: 4bit
+
+verification:
+  model_name: ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli
