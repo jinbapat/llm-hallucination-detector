@@ -1,5 +1,17 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
 torch
 transformers
 sentencepiece
 pyyaml
+rank_bm25
+sentence-transformers
+faiss-cpu
+numpy
+wikipedia-api
+gdelt
+requests
+trafilatura
 pytest

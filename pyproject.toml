@@ -1,10 +1,33 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-hallucination-detector"
 version = "0.1.0"
+description = "Production-ready LLM hallucination detection using claims, retrieval, and NLI."
+requires-python = ">=3.10"
+dependencies = [
+	"fastapi",
+	"uvicorn[standard]",
+	"pydantic",
+	"pydantic-settings",
+	"torch",
+	"transformers",
+	"sentencepiece",
+	"pyyaml",
+	"rank_bm25",
+	"sentence-transformers",
+	"faiss-cpu",
+	"numpy",
+	"wikipedia-api",
+	"gdelt",
+	"requests",
+	"trafilatura",
+]
 
 [tool.setuptools]
-packages = ["src"]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]

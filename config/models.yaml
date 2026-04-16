@@ -1,12 +1,73 @@
-claim_extraction:
-  model_name: google/flan-t5-large
-  device: cuda
-  max_new_tokens: 256
-  temperature: 0.0
+service:
+  host: 0.0.0.0
+  port: 8000
+  log_level: info
 
-answer_generation:
-  model_name: mistralai/Mistral-7B-Instruct-v0.2
-  quantization: 4bit
+models:
+  claim_extraction:
+    model_name: google/flan-t5-large
+    device: auto
+    max_new_tokens: 256
+    temperature: 0.0
+    prompt_path: experiments/claim_extraction/prompts/extract_claims.txt
+  verifier:
+    model_name: ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli
+    device: auto
+    max_length: 512
+    batch_size: 8
+  embeddings:
+    model_name: sentence-transformers/all-MiniLM-L6-v2
+    device: auto
+    normalize: true
 
-verification:
-  model_name: ynie/roberta-large-snli_mnli_fever_anli_R1_R2_R3-nli
+retrieval:
+  bm25_top_k: 5
+  vector_top_k: 5
+  chunk_size: 300
+  chunk_overlap: 50
+  max_documents: 2000
+
+sources:
+  wikipedia:
+    enabled: true
+    cache_dir: data/wiki
+    search_top_k: 3
+  news:
+    enabled: true
+    days_back: 30
+    max_records: 50
+    cache_dir: data/news
+    request_timeout: 10
+
+router:
+  enabled: true
+  semantic: true
+  semantic_threshold: 0.35
+  topics:
+    - name: current_events
+      keywords: ["election", "war", "protest", "earthquake", "attack", "summit"]
+      sources: ["news", "wikipedia"]
+    - name: sports
+      keywords: ["cup", "tournament", "league", "season", "final", "championship"]
+      sources: ["news", "wikipedia"]
+    - name: biography
+      keywords: ["born", "died", "president", "actor", "scientist", "author"]
+      sources: ["wikipedia"]
+    - name: science
+      keywords: ["study", "research", "trial", "vaccine", "compound", "experiment"]
+      sources: ["wikipedia"]
+
+index:
+  enabled: true
+  persist: true
+  path: data/index
+  metric: cosine
+  max_docs: 200000
+  flush_interval: 100
+
+cache:
+  mode: disk
+
+scoring:
+  neutral_weight: 0.5
+  insufficient_weight: 0.75
