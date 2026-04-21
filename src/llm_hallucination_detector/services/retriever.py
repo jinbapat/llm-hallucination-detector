@@ -71,6 +71,12 @@ class EvidenceRetriever:
 
         return self._merge_results(lexical_hits, semantic_hits, top_k)
 
+    def clear_caches(self) -> None:
+        for source in self.sources.values():
+            clear_fn = getattr(source, "clear_cache", None)
+            if callable(clear_fn):
+                clear_fn()
+
     def _chunk_documents(self, documents: List[Document]) -> List[Document]:
         chunked: List[Document] = []
         for doc in documents:

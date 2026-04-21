@@ -18,7 +18,7 @@ class WikipediaSource:
 
     def __init__(self, settings: WikipediaSourceSettings, cache: CacheSettings) -> None:
         self.settings = settings
-        self.cache = DiskCache(settings.cache_dir, cache.mode == "disk")
+        self.cache = DiskCache(settings.cache_dir, cache.mode.lower() == "disk")
         self.wiki = wikipediaapi.Wikipedia(
             language="en",
             extract_format=wikipediaapi.ExtractFormat.WIKI,
@@ -64,3 +64,6 @@ class WikipediaSource:
         search_results = data.get("query", {}).get("search", [])
         titles = [item.get("title") for item in search_results if item.get("title")]
         return titles[: self.settings.search_top_k]
+
+    def clear_cache(self) -> None:
+        self.cache.clear()

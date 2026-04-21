@@ -20,7 +20,7 @@ class GDELTSource:
 
     def __init__(self, settings: NewsSourceSettings, cache: CacheSettings) -> None:
         self.settings = settings
-        self.cache = DiskCache(settings.cache_dir, cache.mode == "disk")
+        self.cache = DiskCache(settings.cache_dir, cache.mode.lower() == "disk")
         self.client = gdelt.GDELT(version=2)
 
     def fetch(self, query: str) -> List[Document]:
@@ -78,3 +78,6 @@ class GDELTSource:
         if extracted:
             self.cache.set(url, extracted)
         return extracted
+
+    def clear_cache(self) -> None:
+        self.cache.clear()

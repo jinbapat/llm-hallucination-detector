@@ -30,3 +30,10 @@ class DiskCache:
             return
         path = self._key_to_path(key)
         path.write_text(value, encoding="utf-8")
+
+    def clear(self) -> None:
+        if not self.enabled or not self.base_dir.exists():
+            return
+        for path in self.base_dir.glob("*"):
+            if path.is_file():
+                path.unlink()

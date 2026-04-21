@@ -66,7 +66,8 @@ index:
   flush_interval: 100
 
 cache:
-  mode: disk
+  mode: none
+  clear_on_response: true
 
 scoring:
   neutral_weight: 0.5

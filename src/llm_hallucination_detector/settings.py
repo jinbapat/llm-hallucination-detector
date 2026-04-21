@@ -86,7 +86,8 @@ class IndexSettings(BaseModel):
 
 
 class CacheSettings(BaseModel):
-    mode: str = "disk"
+    mode: str = "none"
+    clear_on_response: bool = False
 
 
 class ScoringSettings(BaseModel):

@@ -27,6 +27,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     detector = _get_detector(settings)
 
+    def _clear_caches_if_needed() -> None:
+        if settings.cache.clear_on_response:
+            detector.retriever.clear_caches()
+
     @app.get("/health")
     def health() -> dict:
         return {"status": "ok"}
@@ -38,14 +42,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/evidence", response_model=EvidenceResponse)
     def evidence(request: EvidenceRequest) -> EvidenceResponse:
-        documents = detector.retriever.retrieve(request.claim, request.sources, request.top_k)
-        return EvidenceResponse(
-            claim=request.claim,
-            evidence=[
-                {"text": doc.text, "source": doc.source, "metadata": doc.metadata}
-                for doc in documents
-            ],
-        )
+        try:
+            documents = detector.retriever.retrieve(request.claim, request.sources, request.top_k)
+            return EvidenceResponse(
+                claim=request.claim,
+                evidence=[
+                    {"text": doc.text, "source": doc.source, "metadata": doc.metadata}
+                    for doc in documents
+                ],
+            )
+        finally:
+            _clear_caches_if_needed()
 
     @app.post("/verify", response_model=VerifyResponse)
     def verify(request: VerifyRequest) -> VerifyResponse:
@@ -59,24 +66,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/detect", response_model=DetectResponse)
     def detect(request: DetectRequest) -> DetectResponse:
-        result = detector.detect(
-            request.question,
-            request.answer,
-            request.sources,
-            request.top_k,
-        )
-        return DetectResponse(
-            hallucination_score=result["hallucination_score"],
-            claims=[
-                {
-                    "claim": item.claim,
-                    "label": item.label,
-                    "score": item.score,
-                    "evidence": item.evidence,
-                }
-                for item in result["claims"]
-            ],
-        )
+        try:
+            result = detector.detect(
+                request.question,
+                request.answer,
+                request.sources,
+                request.top_k,
+            )
+            return DetectResponse(
+                hallucination_score=result["hallucination_score"],
+                claims=[
+                    {
+                        "claim": item.claim,
+                        "label": item.label,
+                        "score": item.score,
+                        "evidence": item.evidence,
+                    }
+                    for item in result["claims"]
+                ],
+            )
+        finally:
+            _clear_caches_if_needed()
 
     return app
 
